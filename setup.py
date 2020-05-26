@@ -16,7 +16,7 @@ setuptools.setup(
     description="Radial basis functions regression.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://gitlab.sofa.snm.snecma/methodes-modules/optim/sampling",
+    url="https://github.com/pfeliot/pyrbf-dev.git",
     packages=['pyrbf'],
     install_requires = requirements,
     python_requires='>=3.6',
