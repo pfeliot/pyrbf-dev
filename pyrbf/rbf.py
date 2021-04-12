@@ -1,13 +1,13 @@
 import numpy as np
 from scipy.spatial.distance import cdist, pdist, squareform
 from scipy import linalg
-from scipy.optimize import minimize_scalar
+from scipy.optimize import minimize
 
 from .kernels import Kernel, kernels_dict
 from .tails import Tail, tails_dict
 
 class RBF():
-    def __init__(self, kernel = None, tail = None, eta = 1e-6):
+    def __init__(self, kernel = None, tail = None, eta = 1e-12):
         """Creates an instance of RBF model.
 
         Parameters
@@ -210,15 +210,17 @@ class RBF():
             The associated output values.
             
         kwargs : optional
-            Keyword arguments are passed to `scipy.optimize.minimize_scalar`.
+            Keyword arguments are passed to `scipy.optimize.minimize`.
             
         Returns
         -------
         loo : numpy.array
             The leave-one-out residuals after optimization.
         """
-        res = minimize_scalar(lambda param : self.fit(X, y, param), **kwargs)
-        loo = self.fit(X, y, res.x)
+        x0 = np.array(1) if "x0" not in kwargs else np.array()
+        bounds = [(0.01, 2)] if "bounds" not in kwargs else list(kwargs.pop("bounds"))
+        res = minimize(lambda param : self.fit(X, y, param), x0, bounds = bounds, **kwargs)
+        loo = self.fit(X, y, res.x[0])
         return loo
     
     def fit(self, X, y, param = None):
